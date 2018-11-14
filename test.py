@@ -1,6 +1,6 @@
 import gym
-from gym_vizdoom import (LIST_OF_ENVS, EXPLORATION_GOAL_FRAME, GOAL_REACHING_REWARD)
-from gym_vizdoom.logging.navigation_video_writer import NavigationVideoWriter
+from gym_vizdoom import LIST_OF_ENVS
+from gym_vizdoom.logging.navigation_video_writer import SingleGoalVideoWriter
 
 def split_current_goal(observation):
   c = observation.shape[2] // 2
@@ -11,18 +11,18 @@ def split_current_goal(observation):
 def test(env, video_writer, number_of_episodes):
   for _ in range(number_of_episodes):
     observation = env.reset()
-    video_writer.write(*split_current_goal(observation))
+    video_writer.write(observation)
     step = 0
     while True:
       step += 1
-      action = env.action_space.sample()
+      #action = env.action_space.sample()
+      action = 0
       observation, reward, done, info = env.step(action)
-      current, goal = split_current_goal(observation)
-      video_writer.write(current, goal)
+      video_writer.write(observation)
       print('step:', step)
       print('reward:', reward)
-      print('Goal reached?', reward == GOAL_REACHING_REWARD)
-      print('status:', 'exploration' if (goal == EXPLORATION_GOAL_FRAME).all() else 'navigation')
+      # print('Goal reached?', reward == GOAL_REACHING_REWARD)
+      # print('status:', 'exploration' if (goal == EXPLORATION_GOAL_FRAME).all() else 'navigation')
       if done:
         print('Episode finished!')
         break
@@ -34,7 +34,7 @@ def main():
     print('Testing env: {}'.format(env_name))
     env = gym.make(env_name)
     if just_started:
-      video_writer = NavigationVideoWriter('output.mov',
+      video_writer = SingleGoalVideoWriter('output.mov',
                                            env.observation_space.shape)
       just_started = False
     test(env, video_writer, 1)

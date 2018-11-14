@@ -12,6 +12,7 @@ from gym_vizdoom.envs.constants import (DEFAULT_TEST_MAPS,
                                         MAX_STEP_EXPLORATION,
                                         EXPLORATION_STATUS,
                                         GOAL_REACHING_REWARD)
+
 from gym_vizdoom.envs.util import (get_coordinates,
                                    load_frames_from_lmp,
                                    load_goal_frame_from_lmp)

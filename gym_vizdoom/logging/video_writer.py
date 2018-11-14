@@ -2,6 +2,8 @@ import numpy as np
 import subprocess as sp
 import os
 
+import PIL.Image
+
 class VideoWriter:
 
   def __init__(self, out_file, resolution, framerate=24, rgb=True, mode='check'):
@@ -37,7 +39,9 @@ class VideoWriter:
     self.proc = sp.Popen(command, stdin=sp.PIPE)
 
   def add_frame(self, img):
-    self.proc.stdin.write(img.astype(np.uint8).tostring())
+    a = PIL.Image.fromarray(img)
+    a.save('test{}.png'.format(hash(img[0,0,0])))
+    self.proc.stdin.write(img.as_type(np.uint8).tobytes())
 
   def close(self):
     self.proc.stdin.close()
