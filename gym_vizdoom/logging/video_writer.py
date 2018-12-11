@@ -41,7 +41,7 @@ class VideoWriter:
   def add_frame(self, img):
     a = PIL.Image.fromarray(img)
     a.save('test{}.png'.format(hash(img[0,0,0])))
-    self.proc.stdin.write(img.as_type(np.uint8).tobytes())
+    self.proc.stdin.write(img.astype(np.uint8).tobytes())
 
   def close(self):
     self.proc.stdin.close()

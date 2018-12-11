@@ -21,6 +21,7 @@ class SingleGoalVideoWriter():
         return cv2.pyrUp(cv2.pyrUp(input))
 
     def write(self, state):
+        state = state['state']
         screen = self.double_upsampling(state)
         self.video_writer.add_frame(screen)
 
