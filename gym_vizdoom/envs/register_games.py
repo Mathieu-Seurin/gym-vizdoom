@@ -3,10 +3,16 @@ from gym_vizdoom.envs.basic_game_train import NoGoalBasicGameTrain, ColorBasicGa
 GAMES = {}
 
 GAMES['VizdoomBasic'] = \
-    NoGoalBasicGameTrain(initial_skip=14) # todo : to check
+    NoGoalBasicGameTrain()
 
 GAMES['VizdoomBasicColoredSimple'] = \
-    ColorBasicGameTrain(initial_skip=14, mode="simple") # todo : to check
+    ColorBasicGameTrain(mode="simple")
+
+GAMES['VizdoomBasicColoredSimpleOneHot'] = \
+    ColorBasicGameTrain(mode="simple", onehot=True)
 
 GAMES['VizdoomBasicColoredMedium'] = \
-    ColorBasicGameTrain(initial_skip=14, mode="medium") # todo : to check
+    ColorBasicGameTrain(mode="medium")
+
+GAMES['VizdoomBasicColoredMediumOneHot'] = \
+    ColorBasicGameTrain(mode="medium", onehot=True)

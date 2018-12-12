@@ -20,7 +20,8 @@ from gym_vizdoom.envs.constants import (DEFAULT_CONFIG,
                                         STAY_IDLE,
                                         STATE_SHAPE,
                                         STATE_AFTER_GAME_END,
-                                        NO_OBJECTIVE_SHAPE)
+                                        MOVE_LEFT,
+                                        MOVE_RIGHT)
 
 from gym_vizdoom.envs.util import real_get_frame
 
@@ -31,9 +32,11 @@ class BasicGoalGame(ABC):
   def __init__(self,
                dir,
                wad,
-               initial_skip=0):
+               initial_skip,
+               random_location=True):
 
     self.initial_skip = initial_skip // REPEAT
+    self.random_spawn_location = random_location
 
     self.observation_shape = STATE_SHAPE
     self.objective_shape = None
@@ -71,8 +74,6 @@ class BasicGoalGame(ABC):
       done = True
 
     #print("{} {} {}".format(self.game.get_episode_time(), self.step_counter, REPEAT))
-
-
     return state, self.reward_shaping(reward), done, info
 
   def reset(self):
@@ -88,8 +89,19 @@ class BasicGoalGame(ABC):
     else:
       self.class_specific_reset()
     self.new_episode()
-    for _ in range(self.initial_skip):
-      self.stay_idle()
+
+    if self.random_spawn_location:
+      action = random.choice([MOVE_LEFT, MOVE_RIGHT])
+      random_exec = random.randint(0, self.initial_skip)
+      for _ in range(random_exec):
+        self.game.make_action(action, REPEAT)
+      for _ in range(self.initial_skip-random_exec):
+        self.game.make_action(STAY_IDLE, REPEAT)
+    else:
+
+      for _ in range(self.initial_skip):
+        self.stay_idle()
+
     state = self.get_state(done=False)
     return state
 

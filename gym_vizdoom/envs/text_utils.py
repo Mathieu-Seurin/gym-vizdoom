@@ -78,7 +78,7 @@ class TextToIds(object):
 class TextObjectiveGenerator(object):
 
     def __init__(self, env_specific_vocab,
-                 path_to_text="gym_vizdoom/envs/data/Basic",
+                 path_to_text="../gym-vizdoom/gym_vizdoom/envs/data/Basic",
                  sentence_file="sentences.json",
                  mode="simple",
                  onehot=False):
