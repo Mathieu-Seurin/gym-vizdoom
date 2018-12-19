@@ -51,13 +51,14 @@ class TextToIds(object):
 
         self.eos_id = int(self.word_to_id.transform(['eos'])[0])
 
+        # todo : deals with onehot
         self.id_to_one_hot = OneHotEncoder(sparse=False)
         self.id_to_one_hot.fit(all_words_encoded.reshape(len(self.all_words),1))
 
     def pad_encode(self, sentence):
         sentence = self._sentence_to_matrix(sentence)
-        sentence = self._pad(sentence=sentence)
-        return sentence
+        sentence, sentence_length = self._pad(sentence=sentence)
+        return sentence, sentence_length
 
     def _sentence_to_matrix(self, sentence):
         sentence_array = np.array(self.tokenizer(sentence))
@@ -69,15 +70,17 @@ class TextToIds(object):
         return sentence_encoded
 
     def _pad(self, sentence):
-        n_padding = self.max_sentence_length - len(sentence)
+        sentence_length = len(sentence)
+        n_padding = self.max_sentence_length - sentence_length
         if n_padding != 0:
             padding = np.ones(n_padding)*self.eos_id
             sentence = np.concatenate((sentence, padding), axis=0)
-        return sentence
+        return sentence, sentence_length
 
 class TextObjectiveGenerator(object):
 
     def __init__(self, env_specific_vocab,
+                 #path_to_text="/home/sequel/mseurin/gym-vizdoom/gym_vizdoom/envs/data/Basic",
                  path_to_text="../gym-vizdoom/gym_vizdoom/envs/data/Basic",
                  sentence_file="sentences.json",
                  mode="simple",
@@ -111,6 +114,7 @@ class TextObjectiveGenerator(object):
             self.build_vocabulary()
 
         self.voc_size = len(self.all_words)
+        #print(self.all_words)
 
         # Regarding difficulty of the task
         self.keys = ["sentence_color", "absolute_position_sentence", "relative_position_sentence"]
@@ -131,7 +135,7 @@ class TextObjectiveGenerator(object):
         def _choice_color(sentences_template, color, position, other_color):
             random_sentence = random.choice(sentences_template["sentence_color"])
             random_sentence = random_sentence.format(color=color.lower())
-            print(random_sentence)
+            #print(random_sentence)
             return random_sentence
 
         def _choice_abs_position(sentences_template, color, position, other_color):
@@ -176,7 +180,9 @@ class TextObjectiveGenerator(object):
                 new_words = []
                 for sentence in sentences:
                     sentence.replace('{color}', '')
+                    #print(sentence)
                     temp_words = self.tokenize_sentence(sentence)
+                    #print(temp_words)
                     maximum_sent_length = max(len(temp_words), maximum_sent_length)
 
                     new_words.extend(temp_words)

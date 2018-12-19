@@ -12,8 +12,8 @@ import gym.wrappers
 
 import logging
 
-game = gym.make("{}-v0".format("VizdoomBasicColoredSimple"))
-episodes = 1
+game = gym.make("{}-v0".format("VizdoomBasicColoredSimplest"))
+episodes = 10
 
 game = gym.wrappers.Monitor(game, "test_out", resume=False, force=True)
 
@@ -24,10 +24,12 @@ for i in range(episodes):
     j = 0
     reward_total = 0
     while not done:
-        action = int(input())
+        action = random.randint(0,3) #int(input())
         observation, reward, done, info = game.step(action=action)
         j = j+1
         reward_total += reward
-        print(reward_total)
+        #uprint(reward_total)
         if done:
+            print(observation["objective"])
+            print(observation["sentence_length"])
             break

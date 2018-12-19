@@ -1,12 +1,12 @@
 import numpy as np
 
 import gym
-from gym import error, spaces, utils
+from gym import error, utils
 
 from gym_vizdoom.envs.constants import ACTION_CLASSES
 from gym_vizdoom.envs.register_games import GAMES
 
-from collections import OrderedDict
+from gym import spaces
 
 class VizdoomEnv(gym.Env):
     def __init__(self, game_name):
@@ -14,25 +14,7 @@ class VizdoomEnv(gym.Env):
         self.game = GAMES[game_name]
         self.action_space = spaces.Discrete(ACTION_CLASSES)
 
-        # if using embedding instead of one-hot vector
-        if len(self.game.objective_shape) == 1:
-            objective_space = spaces.Box(low=0,
-                                         high=self.game.objective_generator.voc_size,
-                                         shape=self.game.objective_shape,
-                                         dtype=np.int8)
-        else:
-            objective_space = spaces.Box(low=0,
-                                         high=1,
-                                         shape=self.game.objective_shape,
-                                         dtype=np.int8)
-
-        space = OrderedDict({
-            "state": spaces.Box(0, 255, shape=self.game.observation_shape, dtype=np.int8),
-            "objective": objective_space
-        })
-
-        dict_space = spaces.Dict(space)
-        self.observation_space = dict_space
+        self.observation_space = self.game.init_space()
         self.seed()
 
         self.metadata = {'render.modes': ['rgb_array']}

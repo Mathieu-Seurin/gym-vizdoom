@@ -1,4 +1,4 @@
-from gym_vizdoom.envs.basic_game_train import NoGoalBasicGameTrain, ColorBasicGameTrain
+from gym_vizdoom.envs.basic_game_train import NoGoalBasicGameTrain, ColorBasicGameTrain, SimplestColorBasicGameTrain
 
 GAMES = {}
 
@@ -16,3 +16,6 @@ GAMES['VizdoomBasicColoredMedium'] = \
 
 GAMES['VizdoomBasicColoredMediumOneHot'] = \
     ColorBasicGameTrain(mode="medium", onehot=True)
+
+GAMES['VizdoomBasicColoredSimplest'] = \
+    SimplestColorBasicGameTrain()
