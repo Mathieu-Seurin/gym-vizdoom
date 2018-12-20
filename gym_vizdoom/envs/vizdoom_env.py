@@ -14,7 +14,7 @@ class VizdoomEnv(gym.Env):
         self.game = GAMES[game_name]
         self.action_space = spaces.Discrete(ACTION_CLASSES)
 
-        self.observation_space = self.game.init_space()
+        self.observation_space = spaces.Dict(self.game.init_space())
         self.seed()
 
         self.metadata = {'render.modes': ['rgb_array']}
@@ -32,4 +32,7 @@ class VizdoomEnv(gym.Env):
         return self.game.reset()
 
     def render(self, mode='rgb_array'):
-        return self.last_frame.astype(np.uint8)
+        frame = self.last_frame.astype(np.uint8)
+        # if frame is (H, W, 3) okay else convert H,W,1 to H,W,3
+        return frame if frame.shape[2] == 3 else np.tile(frame, (1,1,3))
+

@@ -5,17 +5,11 @@ GAMES = {}
 GAMES['VizdoomBasic'] = \
     NoGoalBasicGameTrain()
 
-GAMES['VizdoomBasicColoredSimple'] = \
-    ColorBasicGameTrain(mode="simple")
-
-GAMES['VizdoomBasicColoredSimpleOneHot'] = \
-    ColorBasicGameTrain(mode="simple", onehot=True)
-
-GAMES['VizdoomBasicColoredMedium'] = \
-    ColorBasicGameTrain(mode="medium")
-
-GAMES['VizdoomBasicColoredMediumOneHot'] = \
-    ColorBasicGameTrain(mode="medium", onehot=True)
-
-GAMES['VizdoomBasicColoredSimplest'] = \
-    SimplestColorBasicGameTrain()
+# GAMES['VizdoomBasicColoredSimple'] = \
+#     ColorBasicGameTrain(mode="simple")
+#
+# GAMES['VizdoomBasicColoredMedium'] = \
+#     ColorBasicGameTrain(mode="medium")
+#
+# GAMES['VizdoomBasicColoredSimplest'] = \
+#     SimplestColorBasicGameTrain()

@@ -22,7 +22,7 @@ from gym_vizdoom.envs.constants import (DEFAULT_CONFIG,
                                         MOVE_LEFT,
                                         MOVE_RIGHT)
 
-from gym_vizdoom.envs.util import real_get_frame
+from gym_vizdoom.envs.util import real_get_frame_rgb
 
 class BasicGoalGame(ABC):
     # num_instance = 0
@@ -31,7 +31,7 @@ class BasicGoalGame(ABC):
                  dir,
                  wad,
                  initial_skip,
-                 random_location=True):
+                 random_location=False):
 
         self.initial_skip = initial_skip // REPEAT
         self.random_spawn_location = random_location
@@ -63,11 +63,11 @@ class BasicGoalGame(ABC):
         info = vars(self).copy()
         info.pop('game', None) # infos for openai baselines need to be picklable, game is not
 
-        if (not done) and self.game.get_episode_time() > self.time_out + REPEAT + self.initial_skip*REPEAT:
+        if (not done) and self.game.get_episode_time() > self.time_out + REPEAT + self.initial_skip*REPEAT + 10:
             warnings.warn(
                 "Timeout, something is wrong. \n Time is {} and Timeout is {}".format(self.game.get_episode_time(), self.time_out),
                 stacklevel=4)
-            done = True
+            #done = True
 
         #print("{} {} {}".format(self.game.get_episode_time(), self.step_counter, REPEAT))
         return state, self.reward_shaping(reward), done, info
@@ -123,7 +123,6 @@ class BasicGoalGame(ABC):
         self.game = game
         self.time_out = self.game.get_episode_timeout()
 
-
     def make_action(self, action_index):
 
         reward = self.game.make_action(ACTIONS_LIST[action_index], REPEAT)
@@ -144,7 +143,7 @@ class BasicGoalGame(ABC):
         return observation
 
     def get_frame(self, done):
-          return real_get_frame(self.game) if not done else STATE_AFTER_GAME_END
+          return real_get_frame_rgb(self.game) if not done else np.zeros(self.objective_shape, dtype=np.uint8)
 
     def update_status(self):
           pass

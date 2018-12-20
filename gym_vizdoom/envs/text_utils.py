@@ -3,7 +3,7 @@ import numpy as np
 import nltk
 import string
 from nltk.stem import PorterStemmer
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+from sklearn.preprocessing import LabelEncoder
 import pickle as pkl
 
 import json
@@ -35,14 +35,13 @@ class TokenizeStemSentence(object):
 
 
 class TextToIds(object):
-    def __init__(self, max_sentence_length, path_to_vocab="data/text/vocabulary.pkl", onehot=False):
+    def __init__(self, max_sentence_length, path_to_vocab="data/text/vocabulary.pkl"):
 
         self.path_to_vocabulary = path_to_vocab
         vocab_dict = pkl.load(open(self.path_to_vocabulary, 'rb'))
         self.all_words, self.max_sentence_length = vocab_dict['all_words'], vocab_dict['max_sentence_length']
 
         self.max_sentence_length = max_sentence_length
-        self.onehot = onehot
 
         self.tokenizer = TokenizeStemSentence()
         self.word_to_id = LabelEncoder()
@@ -50,10 +49,6 @@ class TextToIds(object):
         all_words_encoded = self.word_to_id.fit_transform(np.array(list(self.all_words)))
 
         self.eos_id = int(self.word_to_id.transform(['eos'])[0])
-
-        # todo : deals with onehot
-        self.id_to_one_hot = OneHotEncoder(sparse=False)
-        self.id_to_one_hot.fit(all_words_encoded.reshape(len(self.all_words),1))
 
     def pad_encode(self, sentence):
         sentence = self._sentence_to_matrix(sentence)
@@ -63,9 +58,6 @@ class TextToIds(object):
     def _sentence_to_matrix(self, sentence):
         sentence_array = np.array(self.tokenizer(sentence))
         sentence_encoded = self.word_to_id.transform(sentence_array)
-
-        if self.onehot :
-            sentence_encoded = self.id_to_one_hot.transform(sentence_encoded.reshape(len(sentence_encoded), 1))
 
         return sentence_encoded
 
@@ -80,11 +72,10 @@ class TextToIds(object):
 class TextObjectiveGenerator(object):
 
     def __init__(self, env_specific_vocab,
-                 #path_to_text="/home/sequel/mseurin/gym-vizdoom/gym_vizdoom/envs/data/Basic",
-                 path_to_text="../gym-vizdoom/gym_vizdoom/envs/data/Basic",
+                 path_to_text="/home/sequel/mseurin/gym-vizdoom/gym_vizdoom/envs/data/Basic",
+                 #path_to_text="../gym-vizdoom/gym_vizdoom/envs/data/Basic",
                  sentence_file="sentences.json",
-                 mode="simple",
-                 onehot=False):
+                 mode="simple"):
         """
         :param env_specific_vocab: a list of word that are being used in the env calling this Objective Generator.
         :param mode : can be simple, medium, hard
@@ -121,14 +112,9 @@ class TextObjectiveGenerator(object):
         self.mode = mode
 
         self.text_to_id = TextToIds(max_sentence_length=self.max_sentence_length,
-                                    path_to_vocab=self.path_to_vocabulary,
-                                    onehot=onehot)
+                                    path_to_vocab=self.path_to_vocabulary)
 
-        if onehot:
-            self.text_shape = (self.voc_size, self.max_sentence_length)
-        else:
-            self.text_shape = (self.max_sentence_length)
-
+        self.text_shape = (self.max_sentence_length)
 
 
     def sample(self, color, position, other_color):
